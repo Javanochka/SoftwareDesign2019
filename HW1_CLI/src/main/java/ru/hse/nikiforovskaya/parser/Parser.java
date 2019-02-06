@@ -46,7 +46,7 @@ public class Parser {
             char current = s.charAt(j);
             if (isQuote(current)) {
                 if (stack.getLast() == current) {
-                    stack.pop();
+                    stack.pollLast();
                 } else {
                     stack.add(current);
                 }

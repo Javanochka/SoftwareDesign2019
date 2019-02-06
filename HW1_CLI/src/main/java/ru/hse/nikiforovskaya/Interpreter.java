@@ -82,7 +82,7 @@ public class Interpreter {
             } else {
                 if (Parser.isQuote(current)) {
                     if (!stackOfQuotes.isEmpty() && stackOfQuotes.getLast() == current) {
-                        stackOfQuotes.pop();
+                        stackOfQuotes.pollLast();
                     } else {
                         stackOfQuotes.add(current);
                     }

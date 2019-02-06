@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InterpreterTest {
 
-    ByteArrayOutputStream output;
+    private ByteArrayOutputStream output;
 
     @BeforeEach
     void setUp() {
@@ -38,5 +38,19 @@ class InterpreterTest {
                 "\n" +
                 "c" +
                 "3 3 8" + System.lineSeparator(), output.toString());
+    }
+
+    @Test
+    void testQuotes() throws CommandException, ParserException {
+        Interpreter intr = new Interpreter();
+        intr.processString("m=meow");
+        intr.processString("echo \'$m\'");
+        assertEquals("$m" + System.lineSeparator(), output.toString());
+        output.reset();
+        intr.processString("echo \"$m\"");
+        assertEquals("meow" + System.lineSeparator(), output.toString());
+        output.reset();
+        intr.processString("echo \"\'$m\'\"");
+        assertEquals("\'meow\'" + System.lineSeparator(), output.toString());
     }
 }
