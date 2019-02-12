@@ -48,6 +48,8 @@ public class Interpreter {
                 new Pwd(args.arguments, args.input, args.output));
         put("exit", (Function<ArgumentForCreator, Exit>) args ->
                 new Exit(args.arguments, args.input, args.output));
+        put("grep", (Function<ArgumentForCreator, Grep>) args ->
+                new Grep(args.arguments, args.input, args.output));
     }};
 
     /** Creates an Interpreter with personal scope. */

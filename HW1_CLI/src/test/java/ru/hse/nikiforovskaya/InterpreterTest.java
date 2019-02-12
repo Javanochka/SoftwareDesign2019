@@ -53,4 +53,11 @@ class InterpreterTest {
         intr.processString("echo \"\'$m\'\"");
         assertEquals("\'meow\'" + System.lineSeparator(), output.toString());
     }
+
+    @Test
+    void testGrepWithPipe() throws CommandException, ParserException {
+        Interpreter intr = new Interpreter();
+        intr.processString("cat " + Paths.get("src", "test", "resources", "abaca.txt").toString() + " | grep b");
+        assertEquals("a   b" + System.lineSeparator(), output.toString());
+    }
 }
