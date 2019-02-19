@@ -48,6 +48,10 @@ public class Interpreter {
                 new Pwd(args.arguments, args.input, args.output));
         put("exit", (Function<ArgumentForCreator, Exit>) args ->
                 new Exit(args.arguments, args.input, args.output));
+        put("ls", (Function<ArgumentForCreator, Ls>) args ->
+                new Ls(args.arguments, args.input, args.output));
+        put("cd", (Function<ArgumentForCreator, ChangeDir>) args ->
+                new ChangeDir(args.arguments, args.input, args.output));
     }};
 
     /** Creates an Interpreter with personal scope. */
