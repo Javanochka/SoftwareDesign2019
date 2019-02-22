@@ -1,6 +1,7 @@
 package ru.hse.nikiforovskaya.commands;
 
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
+import ru.hse.nikiforovskaya.commands.exception.ExternalException;
 import ru.hse.nikiforovskaya.commands.exception.InterruptionException;
 import ru.hse.nikiforovskaya.commands.exception.ProblemsWithIOException;
 
@@ -40,20 +41,16 @@ public class External extends Command {
             Process process = pb.start();
             OutputStream processOutput = process.getOutputStream();
             if (input != null) {
-                byte[] buf = new byte[1024];
-                int read;
-                while ((read = input.read(buf)) != -1) {
-                    processOutput.write(buf, 0, read);
-                }
+                input.transferTo(processOutput);
                 processOutput.close();
             }
-            process.waitFor();
-            InputStream processInput = process.getInputStream();
-            byte[] buf = new byte[1024];
-            int read;
-            while ((read = processInput.read(buf)) != -1) {
-                output.write(buf, 0, read);
+            int result = process.waitFor();
+            if (result != 0) {
+                throw new ExternalException("Got error code: " + result +
+                        ". Here its message: " + new String(process.getErrorStream().readAllBytes()));
             }
+            InputStream processInput = process.getInputStream();
+            processInput.transferTo(output);
             output.flush();
         } catch (IOException e) {
             throw new ProblemsWithIOException(e);

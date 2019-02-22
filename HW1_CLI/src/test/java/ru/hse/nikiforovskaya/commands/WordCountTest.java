@@ -47,7 +47,7 @@ class WordCountTest {
     @Test
     void processThrowsException() throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        WordCount wc = new WordCount(null, null, output);
+        WordCount wc = new WordCount(new String[]{}, null, output);
         assertThrows(NoInputException.class, wc::process);
         output.close();
     }
@@ -56,7 +56,7 @@ class WordCountTest {
     void processFromInput() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ByteArrayInputStream input = new ByteArrayInputStream("meow a".getBytes());
-        WordCount wc = new WordCount(null, input, output);
+        WordCount wc = new WordCount(new String[]{}, input, output);
         wc.process();
         output.close();
         String result = output.toString();

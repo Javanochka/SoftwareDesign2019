@@ -1,9 +1,12 @@
 package ru.hse.nikiforovskaya.parser;
 
 import ru.hse.nikiforovskaya.parser.exception.NoPairForQuoteException;
+import ru.hse.nikiforovskaya.parser.exception.NoSuchVariableException;
 import ru.hse.nikiforovskaya.parser.exception.ParserException;
+import ru.hse.nikiforovskaya.parser.exception.PipePlacingException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.function.Predicate;
 
@@ -36,22 +39,13 @@ public class Parser {
      * @throws ParserException if did not find a pair quote
      */
     private static int findPairPosition(String s, int i) throws ParserException {
-        if (s.charAt(i) != '\'' && s.charAt(i) != '\"') {
+        if (!isQuote(s.charAt(i))) {
             return -1;
         }
         char quote = s.charAt(i);
-        LinkedList<Character> stack = new LinkedList<>();
-        stack.add(quote);
         for (int j = i + 1; j < s.length(); j++) {
             char current = s.charAt(j);
-            if (isQuote(current)) {
-                if (stack.getLast() == current) {
-                    stack.pollLast();
-                } else {
-                    stack.add(current);
-                }
-            }
-            if (stack.isEmpty()) {
+            if (quote == current) {
                 return j;
             }
         }
@@ -128,10 +122,63 @@ public class Parser {
      * Splits a string onto words by pipe
      * @param s a string to split
      * @return ArrayList of commands
-     * @throws ParserException if did not find a pair quote
+     * @throws ParserException if did not find a pair quote ot pipes are placed wrong
      */
     public static ArrayList<String> splitIntoCommands(String s) throws ParserException {
-        return splitByPredicate(s, c -> c == '|', false);
+        if (s.length() > 0 && (s.charAt(0) == '|' || s.charAt(s.length() - 1) == '|')) {
+            throw new PipePlacingException(s);
+        }
+        ArrayList<String> result = splitByPredicate(s, c -> c == '|', false);
+        if (result.size() <= 1) {
+            return result;
+        }
+        for (String toCheck : result) {
+            if (toCheck.isBlank()) {
+                throw new PipePlacingException(s);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Substitutes all the variables into the string and check pairs for quotations marks.
+     * @param s a string to preprocess
+     * @return a preprocessed string
+     * @throws ParserException if quotation marks are not paired
+     */
+    public static String preprocessWithSubstitute(String s, HashMap<String, String> dictionary) throws ParserException {
+        StringBuilder result = new StringBuilder("");
+        char lastQuote = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char current = s.charAt(i);
+            if (current == '$' && lastQuote != '\'') {
+                int j = i + 1;
+                while (j < s.length() &&
+                        (Character.isLetter(s.charAt(j)) || s.charAt(j) == '_')) {
+                    j++;
+                }
+                String name = s.substring(i + 1, j);
+                if (dictionary.containsKey(name)) {
+                    result.append(dictionary.get(name));
+                } else {
+                    throw new NoSuchVariableException(name);
+                }
+                i = j - 1;
+            } else {
+                if (Parser.isQuote(current)) {
+                    if (lastQuote == current) {
+                        lastQuote = 0;
+                    } else if (lastQuote == 0){
+                        lastQuote = current;
+                    }
+                }
+                result.append(current);
+            }
+        }
+        if (lastQuote != 0) {
+            throw new NoPairForQuoteException(lastQuote);
+        }
+        return result.toString();
     }
 
     /**

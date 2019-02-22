@@ -29,10 +29,7 @@ public class Echo extends Command {
     @Override
     public void process() throws CommandException {
         try {
-            String result = "";
-            if (arguments != null) {
-                result = String.join(" ", arguments);
-            }
+            String result = String.join(" ", arguments);
             result = result + System.lineSeparator();
             output.write(result.getBytes());
         } catch (IOException e) {

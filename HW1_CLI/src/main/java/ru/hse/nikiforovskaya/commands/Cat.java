@@ -40,10 +40,7 @@ public class Cat extends Command {
         }
         if (arguments.length == 0 && input != null) {
             try {
-                byte[] buf = new byte[1024];
-                while (input.read(buf) != -1) {
-                    output.write(buf);
-                }
+                input.transferTo(output);
                 output.flush();
             } catch (IOException e) {
                 throw new ProblemsWithIOException(e);

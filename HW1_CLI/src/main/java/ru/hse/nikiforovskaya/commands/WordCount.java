@@ -45,20 +45,13 @@ public class WordCount extends Command {
     @Override
     public void process() throws CommandException {
         try {
-            if (arguments != null) {
+            if (arguments.length > 0) {
                 int sumWords = 0;
                 int sumLines = 0;
                 int sumBytes = 0;
                 for (String argument : arguments) {
                     List<String> lines = Files.readAllLines(Paths.get(argument));
-                    int words = 0;
-                    for (String line : lines) {
-                        String[] result = line.trim().split("\\s+");
-                        if (result.length == 1 && result[0].equals("")) {
-                            continue;
-                        }
-                        words += result.length;
-                    }
+                    int words = countWordsNumber(lines);
                     int bytes = Files.readAllBytes(Paths.get(argument)).length;
                     sumWords += words;
                     sumLines += lines.size();
@@ -73,29 +66,28 @@ public class WordCount extends Command {
                     throw new NoInputException("WordCount");
                 }
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                byte[] current = new byte[1024];
-                int read = input.read(current);
-                int bytes = 0;
-                while (read != -1) {
-                    buffer.write(current, 0, read);
-                    bytes += read;
-                    read = input.read(current);
-                }
+                input.transferTo(buffer);
+                int bytes = buffer.toByteArray().length;
                 String result = buffer.toString();
                 String[] lines = result.split(System.lineSeparator());
-                int words = 0;
-                for (String s : lines) {
-                    String[] spliited = s.trim().split("\\s+");
-                    if (spliited.length == 1 && spliited[0].equals("")) {
-                        continue;
-                    }
-                    words += spliited.length;
-                }
+                int words = countWordsNumber(List.of(lines));
                 output.write((lines.length + " " + words + " " + bytes + System.lineSeparator()).getBytes());
                 output.flush();
             }
         } catch (IOException e) {
             throw new ProblemsWithIOException(e);
         }
+    }
+
+    private int countWordsNumber(List<String> lines) {
+        int words = 0;
+        for (String line : lines) {
+            String[] result = line.trim().split("\\s+");
+            if (result.length == 1 && result[0].equals("")) {
+                continue;
+            }
+            words += result.length;
+        }
+        return words;
     }
 }
