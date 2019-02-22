@@ -37,16 +37,16 @@ public class Interpreter {
 
 
     /** A map of existing commands */
-    private final static HashMap<String, Function<ArgumentForCreator, ? extends Command>> existingCommands = new HashMap<String, Function<ArgumentForCreator, ? extends Command>>(){{
-        put("cat", (Function<ArgumentForCreator, Cat>) args ->
+    private final static HashMap<String, Function<ArgumentForCreator, ? extends Command>> existingCommands = new HashMap<>(){{
+        put("cat", args ->
                 new Cat(args.arguments, args.input, args.output));
-        put("echo", (Function<ArgumentForCreator, Echo>) args ->
+        put("echo", args ->
                 new Echo(args.arguments, args.input, args.output));
-        put("wc", (Function<ArgumentForCreator, WordCount>) args ->
+        put("wc", args ->
                 new WordCount(args.arguments, args.input, args.output));
-        put("pwd", (Function<ArgumentForCreator, Pwd>) args ->
+        put("pwd", args ->
                 new Pwd(args.arguments, args.input, args.output));
-        put("exit", (Function<ArgumentForCreator, Exit>) args ->
+        put("exit", args ->
                 new Exit(args.arguments, args.input, args.output));
     }};
 
@@ -103,7 +103,7 @@ public class Interpreter {
      */
     private String[] getTail(ArrayList<String> list) {
         if (list.size() == 1) {
-            return null;
+            return new String[0];
         }
         return list.subList(1, list.size()).toArray(new String[1]);
     }
