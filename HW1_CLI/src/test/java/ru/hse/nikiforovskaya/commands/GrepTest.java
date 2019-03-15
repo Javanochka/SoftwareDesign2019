@@ -1,7 +1,7 @@
 package ru.hse.nikiforovskaya.commands;
 
-import com.beust.jcommander.ParameterException;
 import org.junit.jupiter.api.Test;
+import ru.hse.nikiforovskaya.commands.exception.ArgumentException;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 
 import java.io.ByteArrayOutputStream;
@@ -16,14 +16,28 @@ class GrepTest {
     void processNoneArguments() throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         Grep grep = new Grep(new String[]{}, null, output);
-        assertThrows(ParameterException.class, grep::process);
+        assertThrows(ArgumentException.class, grep::process);
+        output.close();
+    }
+
+    @Test
+    void processExceptionsAfter() throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        Grep grep = new Grep(new String[]{"-A", "event", "build.gradle"}, null, output);
+        assertThrows(ArgumentException.class, grep::process);
+        grep = new Grep(new String[]{"-A", "dva", "event", "build.gradle"}, null, output);
+        assertThrows(ArgumentException.class, grep::process);
+        grep = new Grep(new String[]{"-A", "-3", "event", "build.gradle"}, null, output);
+        assertThrows(ArgumentException.class, grep::process);
         output.close();
     }
 
     @Test
     void processSingleWordPattern() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Grep grep = new Grep(new String[]{"meow", Paths.get("src", "test", "resources", "meow.txt").toString()}, null, output);
+        Grep grep = new Grep(new String[]{"meow",
+                Paths.get("src", "test", "resources", "meow.txt").toString()},
+                null, output);
         grep.process();
         output.close();
         String result = output.toString();
@@ -33,7 +47,9 @@ class GrepTest {
     @Test
     void processSingleWordPatternPrintAfter() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Grep grep = new Grep(new String[]{"-A", "1", "meow", Paths.get("src", "test", "resources", "meow.txt").toString()}, null, output);
+        Grep grep = new Grep(new String[]{"-A", "1", "meow",
+                Paths.get("src", "test", "resources", "meow.txt").toString()},
+                null, output);
         grep.process();
         output.close();
         String result = output.toString();
@@ -46,7 +62,9 @@ class GrepTest {
     @Test
     void processSingleWordPatternNoMatch() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Grep grep = new Grep(new String[]{"abaca", Paths.get("src", "test", "resources", "meow.txt").toString()}, null, output);
+        Grep grep = new Grep(new String[]{"abaca",
+                Paths.get("src", "test", "resources", "meow.txt").toString()},
+                null, output);
         grep.process();
         output.close();
         String result = output.toString();
@@ -56,7 +74,9 @@ class GrepTest {
     @Test
     void processSingleWordPatternCaseSensitive() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Grep grep = new Grep(new String[]{"Meow", Paths.get("src", "test", "resources", "meow.txt").toString()}, null, output);
+        Grep grep = new Grep(new String[]{"Meow",
+                Paths.get("src", "test", "resources", "meow.txt").toString()},
+                null, output);
         grep.process();
         output.close();
         String result = output.toString();
@@ -66,7 +86,9 @@ class GrepTest {
     @Test
     void processSingleWordPatternCaseInsensitive() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Grep grep = new Grep(new String[]{"-i", "Meow", Paths.get("src", "test", "resources", "meow.txt").toString()}, null, output);
+        Grep grep = new Grep(new String[]{"-i", "Meow",
+                Paths.get("src", "test", "resources", "meow.txt").toString()},
+                null, output);
         grep.process();
         output.close();
         String result = output.toString();
@@ -76,7 +98,9 @@ class GrepTest {
     @Test
     void processSingleWordPatternNonWord() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Grep grep = new Grep(new String[]{"me", Paths.get("src", "test", "resources", "meow.txt").toString()}, null, output);
+        Grep grep = new Grep(new String[]{"me",
+                Paths.get("src", "test", "resources", "meow.txt").toString()},
+                null, output);
         grep.process();
         output.close();
         String result = output.toString();
@@ -86,7 +110,9 @@ class GrepTest {
     @Test
     void processSingleWordPatternWordNoMatch() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Grep grep = new Grep(new String[]{"-w", "me", Paths.get("src", "test", "resources", "meow.txt").toString()}, null, output);
+        Grep grep = new Grep(new String[]{"-w", "me",
+                Paths.get("src", "test", "resources", "meow.txt").toString()},
+                null, output);
         grep.process();
         output.close();
         String result = output.toString();
@@ -96,7 +122,9 @@ class GrepTest {
     @Test
     void processSingleWordPatternWordMatch() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Grep grep = new Grep(new String[]{"-w", "meow", Paths.get("src", "test", "resources", "meow.txt").toString()}, null, output);
+        Grep grep = new Grep(new String[]{"-w", "meow",
+                Paths.get("src", "test", "resources", "meow.txt").toString()},
+                null, output);
         grep.process();
         output.close();
         String result = output.toString();

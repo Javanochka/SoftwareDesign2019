@@ -2,6 +2,7 @@ package ru.hse.nikiforovskaya.parser;
 
 import org.junit.jupiter.api.Test;
 import ru.hse.nikiforovskaya.parser.exception.ParserException;
+import ru.hse.nikiforovskaya.parser.exception.PipePlacingException;
 
 import java.util.List;
 
@@ -32,5 +33,11 @@ class ParserTest {
         result = Parser.splitIntoCommands("aba | \"   meow\" | c");
         assertArrayEquals(new String[]{"aba ", " \"   meow\" ", " c"},
                 result.toArray(new String[1]));
+    }
+
+    @Test
+    void splitIntoCommandsTooManyPipes() {
+        assertThrows(PipePlacingException.class, () -> Parser.splitIntoCommands("| cat meow ||"));
+        assertThrows(PipePlacingException.class, () -> Parser.splitIntoCommands("cat meow | | echo"));
     }
 }

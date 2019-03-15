@@ -1,7 +1,9 @@
 package ru.hse.nikiforovskaya.commands;
 
 import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.Parameters;
+import ru.hse.nikiforovskaya.commands.exception.ArgumentException;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 import com.beust.jcommander.Parameter;
 import ru.hse.nikiforovskaya.commands.exception.NoInputException;
@@ -38,7 +40,7 @@ public class Grep extends Command {
     private class GrepArgs {
         @Parameter(names = {"-i", "--ignore-case"}, description = "Should be the case during the search ignored or not.")
         boolean ignoreCase;
-        @Parameter(names = {"-w", "--word-regexp"}, description = "Select only those  lines containing matches that form whole words.")
+        @Parameter(names = {"-w", "--word-regexp"}, description = "Select only those lines containing matches that form whole words.")
         boolean wordsFully;
         @Parameter(names = {"-A", "--after-context"}, description = "Print NUM lines of trailing context after matching lines.")
         int afterContext;
@@ -54,17 +56,25 @@ public class Grep extends Command {
     @Override
     public void process() throws CommandException {
         GrepArgs args = new GrepArgs();
-        JCommander.newBuilder()
-                .addObject(args)
-                .build().parse(arguments);
+        try {
+            JCommander.newBuilder()
+                    .addObject(args)
+                    .build().parse(arguments);
+        } catch(ParameterException e) {
+            throw new ArgumentException("Grep arguments problem.", e);
+        }
+        if (args.afterContext < 0) {
+            throw new ArgumentException("Grep -A: should be non negative.", null);
+        }
         String patternString = args.others.get(0);
+        int flags = 0;
         if (args.ignoreCase) {
-            patternString = patternString.toLowerCase();
+            flags |= Pattern.CASE_INSENSITIVE;
         }
         if (args.wordsFully) {
             patternString = "\\b" + patternString + "\\b";
         }
-        Pattern pattern = Pattern.compile(patternString);
+        Pattern pattern = Pattern.compile(patternString, flags);
         List<String> files = args.others.subList(1, args.others.size());
         if (!files.isEmpty()) {
             boolean first = true;
@@ -110,14 +120,12 @@ public class Grep extends Command {
      * @param file a name of the current file (used for beautiful printing)
      * @throws ProblemsWithIOException if some problem with printing the information found.
      */
-    private void processLinesList(Pattern pattern, GrepArgs args, List<String> lines, String file) throws ProblemsWithIOException {
+    private void processLinesList(Pattern pattern, GrepArgs args, List<String> lines, String file)
+            throws ProblemsWithIOException {
         try {
             int toPrint = 0;
             boolean delimiter = false;
             for (String line : lines) {
-                if (args.ignoreCase) {
-                    line = line.toLowerCase();
-                }
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
                     if (delimiter) {

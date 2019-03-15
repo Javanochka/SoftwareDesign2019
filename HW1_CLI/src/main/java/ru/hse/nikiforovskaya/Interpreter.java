@@ -3,15 +3,12 @@ package ru.hse.nikiforovskaya;
 import ru.hse.nikiforovskaya.commands.*;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 import ru.hse.nikiforovskaya.commands.exception.ProblemsWithIOException;
-import ru.hse.nikiforovskaya.parser.exception.NoPairForQuoteException;
-import ru.hse.nikiforovskaya.parser.exception.NoSuchVariableException;
 import ru.hse.nikiforovskaya.parser.Parser;
 import ru.hse.nikiforovskaya.parser.exception.ParserException;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.function.Function;
 
 /**
@@ -37,18 +34,18 @@ public class Interpreter {
 
 
     /** A map of existing commands */
-    private final static HashMap<String, Function<ArgumentForCreator, ? extends Command>> existingCommands = new HashMap<String, Function<ArgumentForCreator, ? extends Command>>(){{
-        put("cat", (Function<ArgumentForCreator, Cat>) args ->
+    private final static HashMap<String, Function<ArgumentForCreator, ? extends Command>> existingCommands = new HashMap<>(){{
+        put("cat", args ->
                 new Cat(args.arguments, args.input, args.output));
-        put("echo", (Function<ArgumentForCreator, Echo>) args ->
+        put("echo", args ->
                 new Echo(args.arguments, args.input, args.output));
-        put("wc", (Function<ArgumentForCreator, WordCount>) args ->
+        put("wc", args ->
                 new WordCount(args.arguments, args.input, args.output));
-        put("pwd", (Function<ArgumentForCreator, Pwd>) args ->
+        put("pwd", args ->
                 new Pwd(args.arguments, args.input, args.output));
-        put("exit", (Function<ArgumentForCreator, Exit>) args ->
+        put("exit", args ->
                 new Exit(args.arguments, args.input, args.output));
-        put("grep", (Function<ArgumentForCreator, Grep>) args ->
+        put("grep", args ->
                 new Grep(args.arguments, args.input, args.output));
     }};
 
@@ -58,54 +55,13 @@ public class Interpreter {
     }
 
     /**
-     * Substitutes all the variables into the string and check pairs for quotations marks.
-     * @param s a string to preprocess
-     * @return a preprocessed string
-     * @throws ParserException if quotation marks are not paired
-     */
-    private String preprocessWithSubstitute(String s) throws ParserException {
-        StringBuilder result = new StringBuilder("");
-        LinkedList<Character> stackOfQuotes = new LinkedList<>();
-        for (int i = 0; i < s.length(); i++) {
-            char current = s.charAt(i);
-            if (current == '$' && (stackOfQuotes.isEmpty() || stackOfQuotes.getFirst() == '\"')) {
-                int j = i + 1;
-                while (j < s.length() &&
-                        (Character.isLetter(s.charAt(j)) || s.charAt(j) == '_')) {
-                    j++;
-                }
-                String name = s.substring(i + 1, j);
-                if (dictionary.containsKey(name)) {
-                    result.append(dictionary.get(name));
-                } else {
-                    throw new NoSuchVariableException(name);
-                }
-                i = j - 1;
-            } else {
-                if (Parser.isQuote(current)) {
-                    if (!stackOfQuotes.isEmpty() && stackOfQuotes.getLast() == current) {
-                        stackOfQuotes.pollLast();
-                    } else {
-                        stackOfQuotes.add(current);
-                    }
-                }
-                result.append(current);
-            }
-        }
-        if (!stackOfQuotes.isEmpty()) {
-            throw new NoPairForQuoteException(stackOfQuotes.getLast());
-        }
-        return result.toString();
-    }
-
-    /**
      * Utils function which returns the tail of the list
      * @param list a list which tail to return
      * @return an array of all the elements except for the first one
      */
     private String[] getTail(ArrayList<String> list) {
         if (list.size() == 1) {
-            return null;
+            return new String[0];
         }
         return list.subList(1, list.size()).toArray(new String[1]);
     }
@@ -145,7 +101,7 @@ public class Interpreter {
      * @throws CommandException if an exception during running command occurred
      */
     public void processString(String s) throws ParserException, CommandException {
-        String preprocessed = preprocessWithSubstitute(s);
+        String preprocessed = Parser.preprocessWithSubstitute(s, dictionary);
         ArrayList<String> commands = Parser.splitIntoCommands(preprocessed);
         InputStream prev = null;
         ByteArrayOutputStream output = null;

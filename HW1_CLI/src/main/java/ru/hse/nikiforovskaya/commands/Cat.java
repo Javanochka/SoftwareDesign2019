@@ -38,12 +38,9 @@ public class Cat extends Command {
                 throw new ProblemsWithIOException(e);
             }
         }
-        if ((arguments == null || arguments.length == 0) && input != null) {
+        if (arguments.length == 0 && input != null) {
             try {
-                byte[] buf = new byte[1024];
-                while (input.read(buf) != 0) {
-                    output.write(buf);
-                }
+                input.transferTo(output);
                 output.flush();
             } catch (IOException e) {
                 throw new ProblemsWithIOException(e);

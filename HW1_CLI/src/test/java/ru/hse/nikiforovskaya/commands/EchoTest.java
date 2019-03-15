@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class EchoTest {
 
     @Test
-    void processNullArguments() throws CommandException, IOException {
+    void processNoneArguments() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Echo echo = new Echo(null, null, output);
+        Echo echo = new Echo(new String[]{}, null, output);
         echo.process();
         output.close();
         String result = output.toString();
