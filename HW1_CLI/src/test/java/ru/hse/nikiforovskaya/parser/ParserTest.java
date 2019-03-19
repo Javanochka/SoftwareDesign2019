@@ -10,34 +10,37 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ParserTest {
 
+
+    private Parser parser = new Parser();
+
     @Test
     void splitIntoWords() throws ParserException {
-        List<String> result = Parser.splitIntoWords("aba");
+        List<String> result = parser.splitIntoWords("aba");
         assertArrayEquals(new String[]{"aba"}, result.toArray(new String[1]));
-        result = Parser.splitIntoWords("aba     b");
+        result = parser.splitIntoWords("aba     b");
         assertArrayEquals(new String[]{"aba", "b"}, result.toArray(new String[1]));
-        result = Parser.splitIntoWords("aba \"   meow\"  c");
+        result = parser.splitIntoWords("aba \"   meow\"  c");
         assertArrayEquals(new String[]{"aba", "   meow", "c"},
                 result.toArray(new String[1]));
     }
 
     @Test
     void splitIntoCommands() throws ParserException {
-        List<String> result = Parser.splitIntoCommands("aba");
+        List<String> result = parser.splitIntoCommands("aba");
         assertArrayEquals(new String[]{"aba"}, result.toArray(new String[1]));
-        result = Parser.splitIntoCommands("aba  |   b");
+        result = parser.splitIntoCommands("aba  |   b");
         assertArrayEquals(new String[]{"aba  ", "   b"}, result.toArray(new String[1]));
-        result = Parser.splitIntoCommands("aba \"|   meow\"  c");
+        result = parser.splitIntoCommands("aba \"|   meow\"  c");
         assertArrayEquals(new String[]{"aba \"|   meow\"  c"},
                 result.toArray(new String[1]));
-        result = Parser.splitIntoCommands("aba | \"   meow\" | c");
+        result = parser.splitIntoCommands("aba | \"   meow\" | c");
         assertArrayEquals(new String[]{"aba ", " \"   meow\" ", " c"},
                 result.toArray(new String[1]));
     }
 
     @Test
     void splitIntoCommandsTooManyPipes() {
-        assertThrows(PipePlacingException.class, () -> Parser.splitIntoCommands("| cat meow ||"));
-        assertThrows(PipePlacingException.class, () -> Parser.splitIntoCommands("cat meow | | echo"));
+        assertThrows(PipePlacingException.class, () -> parser.splitIntoCommands("| cat meow ||"));
+        assertThrows(PipePlacingException.class, () -> parser.splitIntoCommands("cat meow | | echo"));
     }
 }

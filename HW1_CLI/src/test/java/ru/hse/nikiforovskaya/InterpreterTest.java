@@ -3,6 +3,7 @@ package ru.hse.nikiforovskaya;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
+import ru.hse.nikiforovskaya.parser.Parser;
 import ru.hse.nikiforovskaya.parser.exception.ParserException;
 
 import java.io.ByteArrayOutputStream;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class InterpreterTest {
 
     private ByteArrayOutputStream output;
+    private Parser parser = new Parser();
 
     @BeforeEach
     void setUp() {
@@ -23,7 +25,7 @@ class InterpreterTest {
 
     @Test
     void testExample() throws CommandException, ParserException {
-        Interpreter intr = new Interpreter();
+        Interpreter intr = new Interpreter(parser);
         intr.processString("echo \"Hello, world!\"");
         assertEquals("Hello, world!" + System.lineSeparator(), output.toString());
         intr.processString("FILE=" + Paths.get("src", "test", "resources", "abaca.txt").toString());
@@ -42,7 +44,7 @@ class InterpreterTest {
 
     @Test
     void testQuotes() throws CommandException, ParserException {
-        Interpreter intr = new Interpreter();
+        Interpreter intr = new Interpreter(parser);
         intr.processString("m=meow");
         intr.processString("echo \'$m\'");
         assertEquals("$m" + System.lineSeparator(), output.toString());

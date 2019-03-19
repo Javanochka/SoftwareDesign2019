@@ -18,6 +18,7 @@ import java.util.function.Function;
 public class Interpreter {
 
     private HashMap<String, String> dictionary;
+    private Parser parser;
 
     /** ArgumentForCreator is a class to store all needed arguments for Commands.*/
     private class ArgumentForCreator {
@@ -48,8 +49,9 @@ public class Interpreter {
     }};
 
     /** Creates an Interpreter with personal scope. */
-    public Interpreter() {
+    public Interpreter(Parser parser) {
         dictionary = new HashMap<>();
+        this.parser = parser;
     }
 
     /**
@@ -73,8 +75,8 @@ public class Interpreter {
      * @throws CommandException if an exception during running command occurred
      */
     private void runCommand(String s, InputStream input, OutputStream output) throws ParserException, CommandException {
-        ArrayList<String> splitted = Parser.splitIntoWords(s);
-        String command = splitted.get(0);
+        var splitted = parser.splitIntoWords(s);
+        var command = splitted.get(0);
         if (splitted.size() == 1 && command.indexOf('=') != -1) {
             int index = command.indexOf('=');
             String key = command.substring(0, index);
@@ -87,8 +89,8 @@ public class Interpreter {
             toRun.process();
             return;
         }
-        Function<ArgumentForCreator, ? extends Command> creator = existingCommands.get(command);
-        Command toRun = creator.apply(new ArgumentForCreator(getTail(splitted), input, output));
+        var creator = existingCommands.get(command);
+        var toRun = creator.apply(new ArgumentForCreator(getTail(splitted), input, output));
         toRun.process();
     }
 
@@ -99,8 +101,8 @@ public class Interpreter {
      * @throws CommandException if an exception during running command occurred
      */
     public void processString(String s) throws ParserException, CommandException {
-        String preprocessed = Parser.preprocessWithSubstitute(s, dictionary);
-        ArrayList<String> commands = Parser.splitIntoCommands(preprocessed);
+        var preprocessed = parser.preprocessWithSubstitute(s, dictionary);
+        var commands = parser.splitIntoCommands(preprocessed);
         InputStream prev = null;
         ByteArrayOutputStream output = null;
         for (String command : commands) {
@@ -128,10 +130,10 @@ public class Interpreter {
      * @throws IOException if some problems with standard input-output occurred
      */
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        Interpreter interpreter = new Interpreter();
+        var br = new BufferedReader(new InputStreamReader(System.in));
+        var interpreter = new Interpreter(new Parser());
         while (true) {
-            String line = br.readLine();
+            var line = br.readLine();
             try {
                 interpreter.processString(line);
             } catch (ParserException e) {
@@ -141,6 +143,9 @@ public class Interpreter {
                 if (e.getCause() != null) {
                     System.out.println("The cause is " + e.getCause().getMessage());
                 }
+            }
+            if (Exit.shouldExit()) {
+                return;
             }
         }
     }

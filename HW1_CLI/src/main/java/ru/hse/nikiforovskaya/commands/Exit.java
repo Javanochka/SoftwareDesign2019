@@ -9,6 +9,16 @@ import java.io.OutputStream;
  */
 public class Exit extends Command {
 
+    private static boolean SHOULD_EXIT = false;
+
+    /**
+     * shouldExit returns true if in the last session exit was called.
+     * @return {@code true} if exit was called, {@code false} otherwise.
+     */
+    public static boolean shouldExit() {
+        return SHOULD_EXIT;
+    }
+
     /**
      * Creates a new Exit instance
      * @param arguments is a String array of arguments to pass to the command. Never in use
@@ -22,6 +32,6 @@ public class Exit extends Command {
     /** Runs the command. */
     @Override
     public void process() {
-        System.exit(0);
+        SHOULD_EXIT = true;
     }
 }

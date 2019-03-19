@@ -7,11 +7,10 @@ import ru.hse.nikiforovskaya.parser.exception.PipePlacingException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.function.Predicate;
 
 /**
- * Parser has util to work with strings, to split them onto commands and words.
+ * Parser has utils to work with strings, to split them onto commands and words.
  * Parser does not know anything about commands.
  * Knows only two types of quotes: " and '
  */
@@ -38,7 +37,7 @@ public class Parser {
      * @return a pair position
      * @throws ParserException if did not find a pair quote
      */
-    private static int findPairPosition(String s, int i) throws ParserException {
+    private int findPairPosition(String s, int i) throws ParserException {
         if (!isQuote(s.charAt(i))) {
             return -1;
         }
@@ -62,7 +61,7 @@ public class Parser {
      * @return ParserResult with the found word and the position, where stopped.
      * @throws ParserException if did not find a pair quote
      */
-    private static ParserResult getFirstWord(String s, int startPoint, Predicate<Character> predicate, boolean deleteQuotes) throws ParserException {
+    private ParserResult getFirstWord(String s, int startPoint, Predicate<Character> predicate, boolean deleteQuotes) throws ParserException {
         StringBuilder answer = new StringBuilder("");
         int i = startPoint;
         while (i < s.length() && predicate.test(s.charAt(i))) {
@@ -98,7 +97,7 @@ public class Parser {
      * @return ArrayList of the words got
      * @throws ParserException if did not find a pair quote
      */
-    private static ArrayList<String> splitByPredicate(String s, Predicate<Character> predicate, boolean deleteQuotes) throws ParserException {
+    private ArrayList<String> splitByPredicate(String s, Predicate<Character> predicate, boolean deleteQuotes) throws ParserException {
         ParserResult current = getFirstWord(s, 0, predicate, deleteQuotes);
         ArrayList<String> result = new ArrayList<>();
         while (current != null) {
@@ -114,7 +113,7 @@ public class Parser {
      * @return ArrayList of words
      * @throws ParserException if did not find a pair quote
      */
-    public static ArrayList<String> splitIntoWords(String s) throws ParserException {
+    public ArrayList<String> splitIntoWords(String s) throws ParserException {
         return splitByPredicate(s, Character::isSpaceChar, true);
     }
 
@@ -124,7 +123,7 @@ public class Parser {
      * @return ArrayList of commands
      * @throws ParserException if did not find a pair quote ot pipes are placed wrong
      */
-    public static ArrayList<String> splitIntoCommands(String s) throws ParserException {
+    public ArrayList<String> splitIntoCommands(String s) throws ParserException {
         if (s.length() > 0 && (s.charAt(0) == '|' || s.charAt(s.length() - 1) == '|')) {
             throw new PipePlacingException(s);
         }
@@ -146,7 +145,7 @@ public class Parser {
      * @return a preprocessed string
      * @throws ParserException if quotation marks are not paired
      */
-    public static String preprocessWithSubstitute(String s, HashMap<String, String> dictionary) throws ParserException {
+    public String preprocessWithSubstitute(String s, HashMap<String, String> dictionary) throws ParserException {
         StringBuilder result = new StringBuilder("");
         char lastQuote = 0;
         for (int i = 0; i < s.length(); i++) {
@@ -165,7 +164,7 @@ public class Parser {
                 }
                 i = j - 1;
             } else {
-                if (Parser.isQuote(current)) {
+                if (isQuote(current)) {
                     if (lastQuote == current) {
                         lastQuote = 0;
                     } else if (lastQuote == 0){
@@ -186,7 +185,7 @@ public class Parser {
      * @param c a char to check
      * @return {@code true} if c is a quotation mark, {@code false} otherwise
      */
-    public static boolean isQuote(char c) {
+    public boolean isQuote(char c) {
         return c == '\'' || c == '\"';
     }
 }
