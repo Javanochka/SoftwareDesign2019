@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.hse.nikiforovskaya'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.1")
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'ru.hse.nikiforovskaya.Interpreter'
+    }
+}
+
+test {
+    testLogging {
+        events 'started', 'passed'
+    }
+}
