@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     testCompile("org.junit.jupiter:junit-jupiter-api:5.0.1")
+    compile group: 'com.beust', name: 'jcommander', version: '1.72'
 }
 
 jar {

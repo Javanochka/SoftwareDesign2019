@@ -46,6 +46,8 @@ public class Interpreter {
                 new Pwd(args.arguments, args.input, args.output));
         put("exit", args ->
                 new Exit(args.arguments, args.input, args.output));
+        put("grep", args ->
+                new Grep(args.arguments, args.input, args.output));
     }};
 
     /** Creates an Interpreter with personal scope. */
