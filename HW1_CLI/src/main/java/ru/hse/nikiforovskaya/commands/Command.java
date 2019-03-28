@@ -1,6 +1,6 @@
 package ru.hse.nikiforovskaya.commands;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import ru.hse.nikiforovskaya.Interpreter;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 
