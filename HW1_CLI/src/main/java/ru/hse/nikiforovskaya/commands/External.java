@@ -19,9 +19,10 @@ public class External extends Command {
 
     /**
      * Creates a new External instance
+     *
      * @param arguments is a String array of arguments to pass to the command
-     * @param input is an input stream to pass to the command
-     * @param output is an output stream to pass to the command
+     * @param input     is an input stream to pass to the command
+     * @param output    is an output stream to pass to the command
      */
     public External(String[] arguments, InputStream input, OutputStream output) {
         super(arguments, input, output);
@@ -29,13 +30,15 @@ public class External extends Command {
 
     /**
      * Runs command
+     *
      * @throws CommandException if an exception occurred during command running
      */
     @Override
     public void process() throws CommandException {
         try {
             List<String> args = Arrays.stream(arguments).collect(Collectors.toList());
-            ProcessBuilder pb = new ProcessBuilder(args);
+            ProcessBuilder pb = new ProcessBuilder(args).directory(
+                    getPath(".").toFile());
 
             Process process = pb.start();
             OutputStream processOutput = process.getOutputStream();
