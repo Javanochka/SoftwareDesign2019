@@ -5,6 +5,7 @@ import ru.hse.nikiforovskaya.commands.exception.InvalidArgumentException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -27,7 +28,11 @@ public class ChangeDir extends Command {
         }
         Path path = Paths.get(System.getProperty("user.home"));
         if (arguments != null && arguments.length == 1) {
-            path = Paths.get(System.getProperty("user.dir"), arguments[0]);
+            path = getPath(arguments[0]);
+        }
+        if (!Files.isDirectory(path)) {
+            throw new InvalidArgumentException("The specified path doesn't " +
+                    "exist");
         }
         System.setProperty("user.dir", path.normalize().toString());
     }

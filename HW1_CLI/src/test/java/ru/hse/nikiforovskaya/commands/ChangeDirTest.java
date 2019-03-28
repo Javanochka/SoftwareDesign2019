@@ -24,7 +24,7 @@ class ChangeDirTest {
 
         String oldPath = outputForOldPwd.toString();
         String newPath = outputForNewPwd.toString();
-        
+
         //assertEquals(newPath.getParent().toString(), oldPath.toString());
         //System.out.println(Paths.get(newPath).relativize(Paths.get(oldPath)).toString());
     }

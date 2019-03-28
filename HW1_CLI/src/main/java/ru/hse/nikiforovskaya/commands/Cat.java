@@ -31,7 +31,7 @@ public class Cat extends Command {
     public void process() throws CommandException {
         for (String argument : arguments) {
             try {
-                byte[] bytes = Files.readAllBytes(Paths.get(argument));
+                byte[] bytes = Files.readAllBytes(getPath(argument));
                 output.write(bytes);
                 output.flush();
             } catch (IOException e) {

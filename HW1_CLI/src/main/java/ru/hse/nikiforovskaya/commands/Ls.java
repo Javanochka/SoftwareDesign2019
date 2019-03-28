@@ -32,19 +32,14 @@ public class Ls extends Command {
         }
         Path path;
         if (arguments != null && arguments.length == 1) {
-            Path p = Paths.get(arguments[0]);
-            if (p.isAbsolute()) {
-                path = p;
-            } else {
-                path = Paths.get(System.getProperty("user.dir"), arguments[0]);
-            }
+            path = getPath(arguments[0]);
         } else {
             path = Paths.get(System.getProperty("user.dir"));
         }
         try {
             String res = Files.list(path).map(Path::normalize)
                     .map(x -> {
-                        String relativeName = x.getName(x.getNameCount() - 1).toString();
+                        String relativeName = x.getFileName().toString();
                         if (Files.isDirectory(x)) {
                             return relativeName + File.separator;
                         } else {

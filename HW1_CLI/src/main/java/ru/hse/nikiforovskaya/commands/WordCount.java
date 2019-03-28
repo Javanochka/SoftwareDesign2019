@@ -4,35 +4,38 @@ import ru.hse.nikiforovskaya.commands.exception.CommandException;
 import ru.hse.nikiforovskaya.commands.exception.NoInputException;
 import ru.hse.nikiforovskaya.commands.exception.ProblemsWithIOException;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 /**
  * WordCount or shortly known as wc command.
  * If given arguments, never uses input stream.
- *
+ * <p>
  * Format:
- *
+ * <p>
  * lines_1 words_1 bytes_1 file_1
  * ...
  * lines_n words_n bytes_n file_n
  * lines words bytes "total"
- *
+ * <p>
  * If arguments are not given, counts statistics from the input stream.
- *
+ * <p>
  * Format:
- *
+ * <p>
  * lines words bytes
  */
 public class WordCount extends Command {
 
     /**
      * Creates a new WordCount instance
+     *
      * @param arguments is a String array of arguments to pass to the command
-     * @param input is an input stream to pass to the command
-     * @param output is an output stream to pass to the command
+     * @param input     is an input stream to pass to the command
+     * @param output    is an output stream to pass to the command
      */
     public WordCount(String[] arguments, InputStream input, OutputStream output) {
         super(arguments, input, output);
@@ -40,6 +43,7 @@ public class WordCount extends Command {
 
     /**
      * Runs command
+     *
      * @throws CommandException if problem during input-output occurred. Also throws an exception if no input found while expected (no arguments case)
      */
     @Override
@@ -50,7 +54,7 @@ public class WordCount extends Command {
                 int sumLines = 0;
                 int sumBytes = 0;
                 for (String argument : arguments) {
-                    List<String> lines = Files.readAllLines(Paths.get(argument));
+                    List<String> lines = Files.readAllLines(getPath(argument));
                     int words = 0;
                     for (String line : lines) {
                         String[] result = line.trim().split("\\s+");
@@ -59,7 +63,7 @@ public class WordCount extends Command {
                         }
                         words += result.length;
                     }
-                    int bytes = Files.readAllBytes(Paths.get(argument)).length;
+                    int bytes = Files.readAllBytes(getPath(argument)).length;
                     sumWords += words;
                     sumLines += lines.size();
                     sumBytes += bytes;
