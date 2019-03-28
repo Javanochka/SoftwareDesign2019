@@ -11,12 +11,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 /**
  * Ls is a command which lists the given directory.
- * If 
+ * If no directory is given, lists the current directory.
  */
 public class Ls extends Command {
     /**
@@ -41,6 +40,10 @@ public class Ls extends Command {
             path = getPath(arguments[0]);
         } else {
             path = getPath(".");
+        }
+        if (!Files.isDirectory(path)) {
+            throw new InvalidArgumentException("Specified path is not a " +
+                    "directory");
         }
         try {
             String res = Files.list(path).map(Path::normalize)
