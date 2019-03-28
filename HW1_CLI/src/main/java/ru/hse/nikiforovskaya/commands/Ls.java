@@ -1,5 +1,6 @@
 package ru.hse.nikiforovskaya.commands;
 
+import ru.hse.nikiforovskaya.Interpreter;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 import ru.hse.nikiforovskaya.commands.exception.InvalidArgumentException;
 import ru.hse.nikiforovskaya.commands.exception.ProblemsWithIOException;
@@ -17,12 +18,13 @@ public class Ls extends Command {
     /**
      * Creates a new Command instance
      *
-     * @param arguments is a String array of arguments to pass to the command
-     * @param input     is an input stream to pass to the command
-     * @param output    is an output stream to pass to the command
+     * @param arguments   is a String array of arguments to pass to the command
+     * @param input       is an input stream to pass to the command
+     * @param output      is an output stream to pass to the command
+     * @param interpreter is an interpreter which executes this command
      */
-    public Ls(String[] arguments, InputStream input, OutputStream output) {
-        super(arguments, input, output);
+    public Ls(String[] arguments, InputStream input, OutputStream output, Interpreter interpreter) {
+        super(arguments, input, output, interpreter);
     }
 
     @Override
@@ -34,7 +36,7 @@ public class Ls extends Command {
         if (arguments != null && arguments.length == 1) {
             path = getPath(arguments[0]);
         } else {
-            path = Paths.get(System.getProperty("user.dir"));
+            path = getPath(".");
         }
         try {
             String res = Files.list(path).map(Path::normalize)

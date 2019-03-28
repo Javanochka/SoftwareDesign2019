@@ -22,6 +22,16 @@ public class Interpreter {
 
     private HashMap<String, String> dictionary;
 
+    private String currentDirectory = System.getProperty("user.dir");
+
+    public String getCurrentDirectory() {
+        return currentDirectory;
+    }
+
+    public void setCurrentDirectory(String currentDirectory) {
+        this.currentDirectory = currentDirectory;
+    }
+
     /** ArgumentForCreator is a class to store all needed arguments for Commands.*/
     private class ArgumentForCreator {
         private String[] arguments;
@@ -37,21 +47,22 @@ public class Interpreter {
 
 
     /** A map of existing commands */
-    private final static HashMap<String, Function<ArgumentForCreator, ? extends Command>> existingCommands = new HashMap<String, Function<ArgumentForCreator, ? extends Command>>(){{
+    private final HashMap<String, Function<ArgumentForCreator, ? extends Command>> existingCommands = new HashMap<String, Function<ArgumentForCreator, ? extends Command>>(){{
         put("cat", (Function<ArgumentForCreator, Cat>) args ->
-                new Cat(args.arguments, args.input, args.output));
+                new Cat(args.arguments, args.input, args.output, Interpreter.this));
         put("echo", (Function<ArgumentForCreator, Echo>) args ->
-                new Echo(args.arguments, args.input, args.output));
+                new Echo(args.arguments, args.input, args.output, Interpreter.this));
         put("wc", (Function<ArgumentForCreator, WordCount>) args ->
-                new WordCount(args.arguments, args.input, args.output));
+                new WordCount(args.arguments, args.input, args.output, Interpreter.this));
         put("pwd", (Function<ArgumentForCreator, Pwd>) args ->
-                new Pwd(args.arguments, args.input, args.output));
+                new Pwd(args.arguments, args.input, args.output, Interpreter.this));
         put("exit", (Function<ArgumentForCreator, Exit>) args ->
-                new Exit(args.arguments, args.input, args.output));
+                new Exit(args.arguments, args.input, args.output, Interpreter
+                        .this));
         put("ls", (Function<ArgumentForCreator, Ls>) args ->
-                new Ls(args.arguments, args.input, args.output));
+                new Ls(args.arguments, args.input, args.output, Interpreter.this));
         put("cd", (Function<ArgumentForCreator, ChangeDir>) args ->
-                new ChangeDir(args.arguments, args.input, args.output));
+                new ChangeDir(args.arguments, args.input, args.output, Interpreter.this));
     }};
 
     /** Creates an Interpreter with personal scope. */
@@ -131,7 +142,8 @@ public class Interpreter {
             return;
         }
         if (!existingCommands.containsKey(command)) {
-            Command toRun = new External(splitted.toArray(new String[1]), input, output);
+            Command toRun = new External(splitted.toArray(new String[1]),
+                    input, output, this);
             toRun.process();
             return;
         }

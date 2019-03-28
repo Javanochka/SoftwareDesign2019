@@ -1,30 +1,35 @@
 package ru.hse.nikiforovskaya.commands;
 
+import ru.hse.nikiforovskaya.Interpreter;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 import ru.hse.nikiforovskaya.commands.exception.ProblemsWithIOException;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
  * Cat is a command which print the given in arguments files to output one after another.
  * If there are no arguments, just prints input to the output.
  */
 public class Cat extends Command {
-
     /**
-     * Creates a new Cat instance
-     * @param arguments is a String array of arguments to pass to the command
-     * @param input is an input stream to pass to the command
-     * @param output is an output stream to pass to the command
+     * Creates a new Command instance
+     *
+     * @param arguments   is a String array of arguments to pass to the command
+     * @param input       is an input stream to pass to the command
+     * @param output      is an output stream to pass to the command
+     * @param interpreter is an interpreter which executes this command
      */
-    public Cat(String[] arguments, InputStream input, OutputStream output) {
-        super(arguments, input, output);
+    public Cat(String[] arguments, InputStream input, OutputStream output,
+               Interpreter interpreter) {
+        super(arguments, input, output, interpreter);
     }
 
     /**
      * Runs cat command.
+     *
      * @throws CommandException if some problem during running command occurred.
      */
     @Override

@@ -1,6 +1,7 @@
 package ru.hse.nikiforovskaya.commands;
 
 import org.junit.jupiter.api.Test;
+import ru.hse.nikiforovskaya.Interpreter;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 import ru.hse.nikiforovskaya.commands.exception.NoInputException;
 
@@ -9,13 +10,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WordCountTest {
     @Test
     void processGeneralFile() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        WordCount wc = new WordCount(new String[]{Paths.get("src", "test", "resources", "abaca.txt").toString()}, null, output);
+        WordCount wc = new WordCount(new String[]{Paths.get("src", "test",
+                "resources", "abaca.txt").toString()}, null, output, new Interpreter());
         wc.process();
         output.close();
         String result = output.toString();
@@ -31,7 +34,7 @@ class WordCountTest {
         WordCount wc = new WordCount(new String[]{
                 Paths.get("src", "test", "resources", "abaca.txt").toString(),
                 Paths.get("src", "test", "resources", "meow.txt").toString()
-        }, null, output);
+        }, null, output, new Interpreter());
         wc.process();
         output.close();
         String result = output.toString();
@@ -40,14 +43,14 @@ class WordCountTest {
                 System.lineSeparator() +
                 "4 5 21 " +
                 Paths.get("src", "test", "resources", "meow.txt").toString() +
-                System.lineSeparator()+
+                System.lineSeparator() +
                 "7 8 29 total" + System.lineSeparator(), result);
     }
 
     @Test
     void processThrowsException() throws IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        WordCount wc = new WordCount(null, null, output);
+        WordCount wc = new WordCount(null, null, output, new Interpreter());
         assertThrows(NoInputException.class, wc::process);
         output.close();
     }
@@ -56,7 +59,7 @@ class WordCountTest {
     void processFromInput() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ByteArrayInputStream input = new ByteArrayInputStream("meow a".getBytes());
-        WordCount wc = new WordCount(null, input, output);
+        WordCount wc = new WordCount(null, input, output, new Interpreter());
         wc.process();
         output.close();
         String result = output.toString();

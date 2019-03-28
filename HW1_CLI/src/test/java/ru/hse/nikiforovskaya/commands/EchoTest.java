@@ -1,19 +1,20 @@
 package ru.hse.nikiforovskaya.commands;
 
 import org.junit.jupiter.api.Test;
+import ru.hse.nikiforovskaya.Interpreter;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EchoTest {
 
     @Test
     void processNullArguments() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Echo echo = new Echo(null, null, output);
+        Echo echo = new Echo(null, null, output, new Interpreter());
         echo.process();
         output.close();
         String result = output.toString();
@@ -23,7 +24,7 @@ class EchoTest {
     @Test
     void processEmptyArrayArguments() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Echo echo = new Echo(new String[]{}, null, output);
+        Echo echo = new Echo(new String[]{}, null, output, new Interpreter());
         echo.process();
         output.close();
         String result = output.toString();
@@ -33,7 +34,7 @@ class EchoTest {
     @Test
     void processSeveralElementsArguments() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Echo echo = new Echo(new String[]{"a     b", "c"}, null, output);
+        Echo echo = new Echo(new String[]{"a     b", "c"}, null, output, new Interpreter());
         echo.process();
         output.close();
         String result = output.toString();
@@ -43,7 +44,7 @@ class EchoTest {
     @Test
     void processOneElementArguments() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Echo echo = new Echo(new String[]{"a     b"}, null, output);
+        Echo echo = new Echo(new String[]{"a     b"}, null, output, new Interpreter());
         echo.process();
         output.close();
         String result = output.toString();
@@ -53,7 +54,8 @@ class EchoTest {
     @Test
     void processWithNewlineArguments() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        Echo echo = new Echo(new String[]{"meow", "a\n b"}, null, output);
+        Echo echo = new Echo(new String[]{"meow", "a\n b"}, null, output, new
+                Interpreter());
         echo.process();
         output.close();
         String result = output.toString();

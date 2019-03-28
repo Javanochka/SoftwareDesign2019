@@ -1,5 +1,6 @@
 package ru.hse.nikiforovskaya.commands;
 
+import ru.hse.nikiforovskaya.Interpreter;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 import ru.hse.nikiforovskaya.commands.exception.InvalidArgumentException;
 
@@ -13,12 +14,14 @@ public class ChangeDir extends Command {
     /**
      * Creates a new Command instance
      *
-     * @param arguments is a String array of arguments to pass to the command
-     * @param input     is an input stream to pass to the command
-     * @param output    is an output stream to pass to the command
+     * @param arguments   is a String array of arguments to pass to the command
+     * @param input       is an input stream to pass to the command
+     * @param output      is an output stream to pass to the command
+     * @param interpreter is an interpreter which executes this command
      */
-    public ChangeDir(String[] arguments, InputStream input, OutputStream output) {
-        super(arguments, input, output);
+    public ChangeDir(String[] arguments, InputStream input, OutputStream
+            output, Interpreter interpreter) {
+        super(arguments, input, output, interpreter);
     }
 
     @Override
@@ -34,6 +37,6 @@ public class ChangeDir extends Command {
             throw new InvalidArgumentException("The specified path doesn't " +
                     "exist");
         }
-        System.setProperty("user.dir", path.normalize().toString());
+        interpreter.setCurrentDirectory(path.normalize().toString());
     }
 }

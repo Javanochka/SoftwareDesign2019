@@ -1,6 +1,7 @@
 package ru.hse.nikiforovskaya.commands;
 
 import org.junit.jupiter.api.Test;
+import ru.hse.nikiforovskaya.Interpreter;
 import ru.hse.nikiforovskaya.commands.exception.CommandException;
 
 import java.io.ByteArrayOutputStream;
@@ -15,7 +16,8 @@ class ExternalTest {
     @Test
     void processEchoExternal() throws CommandException, IOException {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
-        External ext = new External(new String[]{"echo", "aba    a", "meow"}, null, output);
+        External ext = new External(new String[]{"echo", "aba    a", "meow"},
+                null, output, new Interpreter());
         ext.process();
         output.close();
         String result = output.toString();
