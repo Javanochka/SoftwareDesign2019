@@ -10,6 +10,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * ChangeDir or cd is a command which sets a current working directory to
+ * given one. If there is no argument, sets current working directory to HOME.
+ */
 public class ChangeDir extends Command {
     /**
      * Creates a new Command instance

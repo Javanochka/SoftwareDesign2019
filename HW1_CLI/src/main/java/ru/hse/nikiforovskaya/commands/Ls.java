@@ -14,6 +14,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
+/**
+ * Ls is a command which lists the given directory.
+ * If 
+ */
 public class Ls extends Command {
     /**
      * Creates a new Command instance
